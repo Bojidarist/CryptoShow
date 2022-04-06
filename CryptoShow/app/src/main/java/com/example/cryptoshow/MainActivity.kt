@@ -1,10 +1,14 @@
 package com.example.cryptoshow
 
+import android.graphics.Color
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import com.example.cryptoshow.services.CoinResponse
 import com.example.cryptoshow.services.HttpClient
 import com.google.android.material.textfield.TextInputEditText
@@ -18,8 +22,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val searchField = findViewById<TextInputEditText?>(R.id.searchField)
+        val coinDetailsContainer = findViewById<CardView?>(R.id.coinDetailsContainer)
         val coinName = findViewById<TextView?>(R.id.coinName)
         val coinPrice = findViewById<TextView?>(R.id.coinPrice)
+        val coinPriceChange = findViewById<TextView?>(R.id.coinPriceChange)
+        val coinPriceLow = findViewById<TextView?>(R.id.coinPriceLow)
+        val coinPriceHigh = findViewById<TextView?>(R.id.coinPriceHigh)
         val searchButton = findViewById<Button?>(R.id.searchButton)
 
         searchButton.setOnClickListener {
@@ -29,18 +37,38 @@ class MainActivity : AppCompatActivity() {
                     // Log.d("my-message", response.body()?.marketData?.currentPrice?.usd.toString())
                     if (response.isSuccessful)
                     {
+                        coinDetailsContainer.visibility = View.VISIBLE
                         coinName.text = response.body()?.name
-                        coinPrice.text = response.body()?.marketData?.currentPrice?.usd.toString()
+                        coinPrice.text = "Price: $${response.body()?.marketData?.currentPrice?.usd}"
+
+                        val priceChange = response.body()?.marketData?.priceChangePercentage24h
+                        priceChange?.let {
+                            when {
+                                it < 0 -> {
+                                    coinPriceChange.setTextColor(Color.RED)
+                                }
+                                it > 0 -> {
+                                    coinPriceChange.setTextColor(Color.GREEN)
+                                }
+                                else -> {
+                                    coinPriceChange.setTextColor(Color.BLACK)
+                                }
+                            }
+                            coinPriceChange.text = it.toString()
+                        }
+
+                        coinPriceLow.text = "Low(24h): $${response.body()?.marketData?.low?.usd}"
+                        coinPriceHigh.text = "High(24h): $${response.body()?.marketData?.high?.usd}"
                     }
                     else {
-                        coinName.text = "Not Found"
-                        coinPrice.text = ""
+                        coinDetailsContainer.visibility = View.GONE
                     }
                     searchButton.isEnabled = true
                 }
 
                 override fun onFailure(call: Call<CoinResponse>, t: Throwable) {
                     searchButton.isEnabled = true
+                    coinDetailsContainer.visibility = View.GONE
                 }
 
             })
