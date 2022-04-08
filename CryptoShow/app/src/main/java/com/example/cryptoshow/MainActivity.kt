@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import com.example.cryptoshow.services.CoinResponse
+import com.example.cryptoshow.models.CoinResponse
 import com.example.cryptoshow.services.HttpClient
 import com.google.android.material.textfield.TextInputEditText
 import retrofit2.Call
@@ -34,14 +34,15 @@ class MainActivity : AppCompatActivity() {
             searchButton.isEnabled = false
             HttpClient.getHttpClient().getCoin(searchField.text?.toString()).enqueue(object: Callback<CoinResponse> {
                 override fun onResponse(call: Call<CoinResponse>, response: Response<CoinResponse>) {
-                    // Log.d("my-message", response.body()?.marketData?.currentPrice?.usd.toString())
                     if (response.isSuccessful)
                     {
-                        coinDetailsContainer.visibility = View.VISIBLE
-                        coinName.text = response.body()?.name
-                        coinPrice.text = "Price: $${response.body()?.marketData?.currentPrice?.usd}"
+                        val coinResponse = response.body()
 
-                        val priceChange = response.body()?.marketData?.priceChangePercentage24h
+                        coinDetailsContainer.visibility = View.VISIBLE
+                        coinName.text = coinResponse?.name
+                        coinPrice.text = "Price: $${coinResponse?.marketData?.currentPrice?.usd}"
+
+                        val priceChange = coinResponse?.marketData?.priceChangePercentage24h
                         priceChange?.let {
                             when {
                                 it < 0 -> {
@@ -57,8 +58,8 @@ class MainActivity : AppCompatActivity() {
                             coinPriceChange.text = it.toString()
                         }
 
-                        coinPriceLow.text = "Low(24h): $${response.body()?.marketData?.low?.usd}"
-                        coinPriceHigh.text = "High(24h): $${response.body()?.marketData?.high?.usd}"
+                        coinPriceLow.text = "Low(24h): $${coinResponse?.marketData?.low?.usd}"
+                        coinPriceHigh.text = "High(24h): $${coinResponse?.marketData?.high?.usd}"
                     }
                     else {
                         coinDetailsContainer.visibility = View.GONE
