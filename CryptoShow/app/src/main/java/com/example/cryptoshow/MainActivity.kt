@@ -68,7 +68,8 @@ class MainActivity : AppCompatActivity() {
     private fun setCoinInfo(coinResponse: CoinResponse?){
         coinDetailsContainer?.visibility = View.VISIBLE
         coinName?.text = coinResponse?.name
-        coinPrice?.text = "Price: $${coinResponse?.marketData?.currentPrice?.usd}"
+        val price = "Price: $${coinResponse?.marketData?.currentPrice?.usd}"
+        coinPrice?.text = price
 
         val priceChange = coinResponse?.marketData?.priceChangePercentage24h
         priceChange?.let {
@@ -86,7 +87,9 @@ class MainActivity : AppCompatActivity() {
             coinPriceChange?.text = it.toString()
         }
 
-        coinPriceLow?.text = "Low(24h): $${coinResponse?.marketData?.low?.usd}"
-        coinPriceHigh?.text = "High(24h): $${coinResponse?.marketData?.high?.usd}"
+        val priceLow = "Low(24h): $${coinResponse?.marketData?.low?.usd}"
+        val priceHigh = "High(24h): $${coinResponse?.marketData?.high?.usd}"
+        coinPriceLow?.text = priceLow
+        coinPriceHigh?.text = priceHigh
     }
 }
