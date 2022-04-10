@@ -1,6 +1,6 @@
 # CryptoShow
 
-CryptoShow is a simple android application for viewing crypto currency prices.
+CryptoShow is a simple android application for viewing crypto currency prices using the [CoinGecko API](https://www.coingecko.com/en/api).
 
 ## Requirements
 
